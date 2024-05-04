@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 import inquirer from "inquirer";
-import chalk from 'chalk'
-import EditorPrompt from "inquirer/lib/prompts/editor.js";
+import chalk from "chalk";
+
 let stuData: { [key: string]: any } = [];
 
 let courses: any = {
@@ -12,52 +12,53 @@ let courses: any = {
   "Type Script": 15000,
 };
 
-
 let studID = 0;
-console.log(chalk.yellow ("\n\nWelcome to Pak Institute\n"));
-
+console.log(chalk.bgYellowBright(chalk.blue("\n\nWelcome to Pak Institute\n")));
 
 for (let i = 1; i != 0; ) {
   let status = await inquirer.prompt({
     name: "status",
     type: "list",
-    message:chalk.green ( "\nWhat Would you Like to Do\n"),
+    message: chalk.green("\nPlease Select your action to Continue\n"),
     choices: [
-      "Edit Existing Student's Record",
-      "Check Student's Status",
       "Enrol New Student",
+      "Check Student's Status",
+      "Edit Existing Student's Record",
+      "Exit",
     ],
   });
   console.log(status.status);
 
   //CONDITION 1 : TO ENROL NEW STUDENT
 
-  if (status.status === "Enrol New Student") {
-    let studInfo = await inquirer.prompt(
-      [
+  if (status.status === "Exit") {
+    console.log(chalk.yellow("GOOD BYE"));
+    break;
+  } else if (status.status === "Enrol New Student") {
+    let studInfo = await inquirer.prompt([
       {
         name: "name",
         type: "input",
-        message: chalk.cyanBright ("Enter Your Name"),
+        message: chalk.cyanBright("Enter Your Name"),
       },
       {
         name: "fname",
         type: "input",
-        message: chalk.cyanBright("Enter Your father's name",)
+        message: chalk.cyanBright("Enter Your father's name"),
       },
       {
         name: "Course",
         type: "list",
-        message:chalk.cyanBright( "Select Your Course to Enrol"),
-        choices: ["Ms Office", "HTML", "C++", "Java Script", "Type Script"]
+        message: chalk.cyanBright("Select Your Course to Enrol"),
+        choices: ["Ms Office", "HTML", "C++", "Java Script", "Type Script"],
       },
       {
         name: "Fee",
         type: "list",
         message: "Select Status of Fee",
-        choices:["Paid", "Unpaid", "Partialy Paid"],
+        choices: ["Paid", "Unpaid", "Partialy Paid"],
       },
-      ]);
+    ]);
     //Gerneratinig Students ID and storing data in to stuData
     studID++;
     let students: { [key: string]: any } = {
@@ -69,69 +70,53 @@ for (let i = 1; i != 0; ) {
     };
     stuData[stuData.length] = students;
 
-    //STORING FEE AND BALANCE 
+    //STORING FEE AND BALANCE
     let lastVal = stuData[stuData.length - 1];
 
-    if (lastVal.Fee === "Unpaid") 
-      {
-        lastVal.Balance = courses[lastVal.Course];
-      }
-    else if (stuData[stuData.length - 1].Fee === "Partialy Paid") 
-      {
-        let amt = await inquirer.prompt(
-          {
-            name: "payment",
-            type: "input",
-            message: "\nEnter the amount Paid\n",
-          });
+    if (lastVal.Fee === "Unpaid") {
+      lastVal.Balance = courses[lastVal.Course];
+    } else if (stuData[stuData.length - 1].Fee === "Partialy Paid") {
+      let amt = await inquirer.prompt({
+        name: "payment",
+        type: "input",
+        message: "\nEnter the amount Paid\n",
+      });
       // console.log(amt.payment)
       stuData[stuData.length - 1]["Balance"] =
         courses[stuData[stuData.length - 1]["Course"]] - amt.payment;
-      }
-    else 
-      { stuData[stuData.length - 1]["Balance"] = 0; }
+    } else {
+      stuData[stuData.length - 1]["Balance"] = 0;
+    }
   }
   //CONDITION 2 : TO CHECK STATUS
-  else if (status.status === "Check Student's Status")
-  {
-    if (stuData.length === 0) 
-      {
-        console.log(`\nThere is no Record in Data\n`);
-      }
-    else 
-      {
-        console.log(stuData);
-      }
+  else if (status.status === "Check Student's Status") {
+    if (stuData.length === 0) {
+      console.log(`\n No Record Found in Data \n`);
+    } else {
+      console.log(stuData);
+    }
   }
   //CONDITION 3 : TO EDIT EXISTING STUDENT'S RECORD
-
   else if (status.status === "Edit Existing Student's Record") {
     let exId = await inquirer.prompt([
       {
         name: "exId",
         type: "input",
-        message: "\n Type student's ID you want to Edit \n",//asking for id to change record
+        message: "\n Type student's ID you want to Edit \n", //asking for id to change record
       },
-      
     ]);
-    console.log(exId.exId)
-
+    console.log(exId.exId);
 
     //LOOP TO CHECK EACH RECORD TO FIND DESIRED ID RECORD
-    for (let i = 0; i<stuData.length; i++) 
-    {console.log(stuData[i].ID)
-
-      if (stuData[i].ID === exId.exId) 
-
-      {
-        console.log(`Found your Desired ID ${exId.exId}`)
-        let newfield = await inquirer.prompt
-        ({
+    for (let i = 0; i < stuData.length; i++)
+      if (stuData[i].ID === exId.exId) {
+        console.log(`Found your Desired ID ${exId.exId}`);
+        let newfield = await inquirer.prompt({
           name: "field",
           type: "list",
           message: "\nSelect the field you want to edit",
           choices: ["Name", "Fname", "Course", "Fee"],
-        })
+        });
         //Editing options other than fee
         if (newfield.field != "Fee") {
           let newVal = await inquirer.prompt({
@@ -139,7 +124,6 @@ for (let i = 1; i != 0; ) {
             type: "input",
             message: "Enter New Value",
           });
-console.log(newVal.newName)
           stuData[i][newfield.field] = newVal.newName;
         }
         //EDITING THE FEE OPTION
@@ -154,67 +138,29 @@ console.log(newVal.newName)
 
           if (newFee.newFee === "Unpaid") {
             stuData[i].Balance = courses[stuData[i].Course];
-          } 
-          else if (newFee.newFee === "Partialy Paid") 
-            {
+          } else if (newFee.newFee === "Partialy Paid") {
             let amt = await inquirer.prompt({
               name: "payment",
               type: "input",
               message: "\nEnter the amount Paid\n",
             });
 
-            
             stuData[i].Balance = courses[stuData[i].Course] - amt.payment;
-          }
-          else 
-          {
+          } else {
             stuData[i].Balance = 0;
           }
-        }      
-      console.log(stuData[i]);
-        break
-    }
-      else if(i === stuData.length-1 ) 
-        {
-          console.log("ID DOES NOT EXIST");
-          break
-        }  
-    
+        }
+        console.log(stuData[i]);
+        break;
+      } else if (i === stuData.length - 1) {
+        console.log("ID DOES NOT EXIST");
+        break;
+      }
+
       // IF ID DOESN'T EXIST
-      else 
-      {console.log(i)
+      else {
+        console.log(i);
         continue;
       }
   }
-      
-       
-      
-    
-  
-  let Trans = await inquirer.prompt
-  ({
-    name: "moreTrans",
-    type: "list",
-    message: "\nDo you want to perform more Transactions\n",
-    choices: ["Yes", "No"],
-  });
-  if (Trans.moreTrans === "No") 
-    {
-      i = 0;
-
-    }
-    else
-    {
-    continue;
-    }
-
-  }}
-  
-
-console.log(stuData);
-
-//errors
-//after entering record not asking for more trans
-//on partial paid balance shows 0
-
-
+}

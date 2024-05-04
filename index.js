@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 import inquirer from "inquirer";
-import chalk from 'chalk';
+import chalk from "chalk";
 let stuData = [];
 let courses = {
     "Ms Office": 10000,
@@ -10,21 +10,26 @@ let courses = {
     "Type Script": 15000,
 };
 let studID = 0;
-console.log(chalk.yellow("\n\nWelcome to Pak Institute\n"));
+console.log(chalk.bgYellowBright(chalk.blue("\n\nWelcome to Pak Institute\n")));
 for (let i = 1; i != 0;) {
     let status = await inquirer.prompt({
         name: "status",
         type: "list",
-        message: chalk.green("\nWhat Would you Like to Do\n"),
+        message: chalk.green("\nPlease Select your action to Continue\n"),
         choices: [
-            "Edit Existing Student's Record",
-            "Check Student's Status",
             "Enrol New Student",
+            "Check Student's Status",
+            "Edit Existing Student's Record",
+            "Exit",
         ],
     });
     console.log(status.status);
     //CONDITION 1 : TO ENROL NEW STUDENT
-    if (status.status === "Enrol New Student") {
+    if (status.status === "Exit") {
+        console.log(chalk.yellow("GOOD BYE"));
+        break;
+    }
+    else if (status.status === "Enrol New Student") {
         let studInfo = await inquirer.prompt([
             {
                 name: "name",
@@ -34,19 +39,19 @@ for (let i = 1; i != 0;) {
             {
                 name: "fname",
                 type: "input",
-                message: chalk.cyanBright("Enter Your father's name")
+                message: chalk.cyanBright("Enter Your father's name"),
             },
             {
                 name: "Course",
                 type: "list",
                 message: chalk.cyanBright("Select Your Course to Enrol"),
-                choices: ["Ms Office", "HTML", "C++", "Java Script", "Type Script"]
+                choices: ["Ms Office", "HTML", "C++", "Java Script", "Type Script"],
             },
             {
                 name: "Fee",
                 type: "list",
                 message: "Select Status of Fee",
-                choices: chalk.green(["Paid", "Unpaid", "Partialy Paid"]),
+                choices: ["Paid", "Unpaid", "Partialy Paid"],
             },
         ]);
         //Gerneratinig Students ID and storing data in to stuData
@@ -59,7 +64,7 @@ for (let i = 1; i != 0;) {
             Fee: studInfo.Fee,
         };
         stuData[stuData.length] = students;
-        //STORING FEE AND BALANCE 
+        //STORING FEE AND BALANCE
         let lastVal = stuData[stuData.length - 1];
         if (lastVal.Fee === "Unpaid") {
             lastVal.Balance = courses[lastVal.Course];
@@ -81,7 +86,7 @@ for (let i = 1; i != 0;) {
     //CONDITION 2 : TO CHECK STATUS
     else if (status.status === "Check Student's Status") {
         if (stuData.length === 0) {
-            console.log(`\nThere is no Record in Data\n`);
+            console.log(`\n No Record Found in Data \n`);
         }
         else {
             console.log(stuData);
@@ -98,8 +103,7 @@ for (let i = 1; i != 0;) {
         ]);
         console.log(exId.exId);
         //LOOP TO CHECK EACH RECORD TO FIND DESIRED ID RECORD
-        for (let i = 0; i < stuData.length; i++) {
-            console.log(stuData[i].ID);
+        for (let i = 0; i < stuData.length; i++)
             if (stuData[i].ID === exId.exId) {
                 console.log(`Found your Desired ID ${exId.exId}`);
                 let newfield = await inquirer.prompt({
@@ -115,7 +119,6 @@ for (let i = 1; i != 0;) {
                         type: "input",
                         message: "Enter New Value",
                     });
-                    console.log(newVal.newName);
                     stuData[i][newfield.field] = newVal.newName;
                 }
                 //EDITING THE FEE OPTION
@@ -154,22 +157,5 @@ for (let i = 1; i != 0;) {
                 console.log(i);
                 continue;
             }
-        }
-        let Trans = await inquirer.prompt({
-            name: "moreTrans",
-            type: "list",
-            message: "\nDo you want to perform more Transactions\n",
-            choices: ["Yes", "No"],
-        });
-        if (Trans.moreTrans === "No") {
-            i = 0;
-        }
-        else {
-            continue;
-        }
     }
 }
-console.log(stuData);
-//errors
-//after entering record not asking for more trans
-//on partial paid balance shows 0
