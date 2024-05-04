@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #! /usr/bin/env node
 import inquirer from "inquirer";
 import chalk from "chalk";
@@ -159,3 +160,5 @@ for (let i = 1; i != 0;) {
             }
     }
 }
+=======
+>>>>>>> aab574e016acf59dd085e9c5482880bcc1de5043
