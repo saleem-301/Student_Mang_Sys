@@ -23,8 +23,6 @@ for (let i = 1; i != 0; ) {
     choices: [
       "Enrol New Student",
       "Check Student's Status",
-      "Enrol New Student",
-      "Check Student's Status",
       "Edit Existing Student's Record",
       "Exit",
     ],
